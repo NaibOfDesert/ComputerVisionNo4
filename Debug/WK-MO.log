@@ -1,3 +1,13 @@
 ﻿cl : wiersz polecenia warning D9035: Opcja "Gm" jest przestarzała i będzie usunięta w przyszłych wydaniach
   WK-MO.cpp
+F:\03 Studia\03_04_Widzenie Komputerowe\Laboratorium 04\SimpleMinDistanceClassifier\WK-MO.cpp(238,40): warning C4244: "=": konwersja z "_Ty" do "int", możliwa utrata danych
+          with
+          [
+              _Ty=double
+          ]
+F:\03 Studia\03_04_Widzenie Komputerowe\Laboratorium 04\SimpleMinDistanceClassifier\WK-MO.cpp(318,40): warning C4244: "=": konwersja z "_Ty" do "int", możliwa utrata danych
+          with
+          [
+              _Ty=double
+          ]
   WK-MO.vcxproj -> F:\03 Studia\03_04_Widzenie Komputerowe\Laboratorium 04\SimpleMinDistanceClassifier\Debug\WK-MO.exe

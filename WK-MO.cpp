@@ -3,6 +3,9 @@
  *****************************************************************/
 
 #include <windows.h>
+#include <vector>
+
+using namespace std;
 
 struct DPOINT
 {
@@ -27,6 +30,8 @@ BOOL RysujPunkty(HDC kontekst);
 BOOL RysujPunkt(HDC kontekst, POINT pt, COLORREF kolor);
 DPOINT OknoNaUklad(POINT ptOkna);
 POINT UkladNaOkno(DPOINT ptUkladu);
+DPOINT WyszukajSrodek(DPOINT __klasa[], int __licz);
+BOOL RysujPixel(HDC kontekst, POINT pt, COLORREF kolor);
 
 //funkcja Main - dla Windows
  int WINAPI WinMain(HINSTANCE hInstance,
@@ -106,7 +111,8 @@ LRESULT CALLBACK WndProc (HWND okno, UINT kod_meldunku, WPARAM wParam, LPARAM lP
 
 		mKlasyfikator = CreateMenu();
 		AppendMenu(mKlasyfikator, MF_STRING, 300, "&Start!");
-		AppendMenu(mKlasyfikator, MF_STRING, 301, "&Czyœæ");
+		AppendMenu(mKlasyfikator, MF_STRING, 301, "&Modu³owa!");
+		AppendMenu(mKlasyfikator, MF_STRING, 302, "&Czyœæ");
 
 		mInfo = CreateMenu();
 		AppendMenu(mInfo, MF_STRING, 400, "&Autor...");
@@ -166,12 +172,167 @@ LRESULT CALLBACK WndProc (HWND okno, UINT kod_meldunku, WPARAM wParam, LPARAM lP
 					break;
 				}
 		case 300:						//Klasyfikator -> Start!
+				{		
+					HDC kontekst = GetDC(okno);
+					COLORREF kolor = RGB(0, 0, 0);
+					DPOINT tmpMidPoint;
+					POINT tmpPt;
+
+					struct vectorKlasa
+					{
+						DPOINT* klasa;
+						DPOINT moda;
+						int licz;
+						COLORREF kolor;
+					};
+
+					vector<vectorKlasa> tmpVektorKlasa;
+					tmpVektorKlasa.push_back({ klasa0, {0,0}, licz0, RGB(255, 0, 0) });
+					tmpVektorKlasa.push_back({ klasa1, {0,0}, licz1, RGB(0, 255, 0) });
+					tmpVektorKlasa.push_back({ klasa2, {0,0}, licz2, RGB(0, 0 ,255) });
+					tmpVektorKlasa.push_back({ klasa3, {0,0}, licz3, RGB(255, 255, 0) });
+
+					if (licz0 > 0) {
+						tmpVektorKlasa[0].moda = WyszukajSrodek(klasa0, licz0);
+						POINT pt0 = UkladNaOkno(tmpVektorKlasa[0].moda);
+						RysujPunkt(kontekst, pt0, kolor);
+					}
+
+					if (licz1 > 0) {
+						tmpVektorKlasa[1].moda = WyszukajSrodek(klasa1, licz1);
+						POINT pt1 = UkladNaOkno(tmpVektorKlasa[1].moda);
+						RysujPunkt(kontekst, pt1, kolor);
+					}
+					
+					if (licz2 > 0) {
+						tmpVektorKlasa[2].moda = WyszukajSrodek(klasa2, licz2);
+						POINT pt2 = UkladNaOkno(tmpVektorKlasa[2].moda);
+						RysujPunkt(kontekst, pt2, kolor);
+					}
+
+					if (licz3 > 0) {
+						tmpVektorKlasa[3].moda = WyszukajSrodek(klasa3, licz3);
+						POINT pt3 = UkladNaOkno(tmpVektorKlasa[3].moda);
+						RysujPunkt(kontekst, pt3, kolor);
+					}
+
+					// krok 005
+					// Funkcje OknoNaUklad oraz UkladNaOkno przeliczaj¹ wspó³rzêdne ekranowe na wspó³rzêdne uk³adu i odwrotnie.
+					// W uk³adzie wspó³rzêdnych, w którym dzia³a klasyfikator, wartoœci x zmieniaj¹ siê w zakresie(-4; 4), a y(-3; 3).
+
+					for (double x = -4; x <= 4; x += 0.05) {
+						for (double y = -3; y <= 3; y += 0.05) {
+							vector<double> dystans = { LDBL_MAX, LDBL_MAX, LDBL_MAX, LDBL_MAX };
+							tmpMidPoint.x = x;
+							tmpMidPoint.y = y;
+							int tmpdystansmin = 99999;
+							int tmpMinDystansKlasa = 99999;
+
+							for (int klasa = 0; klasa < 4; klasa++)
+							{
+								
+								if (tmpVektorKlasa[klasa].licz != 0)
+								{
+									dystans[klasa] = pow(x - tmpVektorKlasa[klasa].moda.x, 2) + pow(y - tmpVektorKlasa[klasa].moda.y, 2);
+									if (tmpdystansmin > dystans[klasa]) {
+										tmpdystansmin = dystans[klasa];
+										tmpMinDystansKlasa = klasa;
+									}
+								
+								}
+							}	
+							
+							tmpPt = UkladNaOkno(tmpMidPoint);
+
+							RysujPixel(kontekst, tmpPt, tmpVektorKlasa[tmpMinDystansKlasa].kolor);
+
+						}
+					}
 					break;
+				}
 
 		case 301:						//Klasyfikator -> Czyœæ
-					break;
+				{
+					HDC kontekst = GetDC(okno);
+					COLORREF kolor = RGB(0, 0, 0);
+					DPOINT tmpMidPoint;
+					POINT tmpPt;
 
-		case 400: MessageBox(okno, "Imiê i nazwisko:\nNumer indeksu: ", "Autor", MB_OK);
+					struct vectorKlasa
+					{
+						DPOINT* klasa;
+						DPOINT moda;
+						int licz;
+						COLORREF kolor;
+					};
+
+					vector<vectorKlasa> tmpVektorKlasa;
+					tmpVektorKlasa.push_back({ klasa0, {0,0}, licz0, RGB(255, 0, 0) });
+					tmpVektorKlasa.push_back({ klasa1, {0,0}, licz1, RGB(0, 255, 0) });
+					tmpVektorKlasa.push_back({ klasa2, {0,0}, licz2, RGB(0, 0 ,255) });
+					tmpVektorKlasa.push_back({ klasa3, {0,0}, licz3, RGB(255, 255, 0) });
+
+					if (licz0 > 0) {
+						tmpVektorKlasa[0].moda = WyszukajSrodek(klasa0, licz0);
+						POINT pt0 = UkladNaOkno(tmpVektorKlasa[0].moda);
+						RysujPunkt(kontekst, pt0, kolor);
+					}
+
+					if (licz1 > 0) {
+						tmpVektorKlasa[1].moda = WyszukajSrodek(klasa1, licz1);
+						POINT pt1 = UkladNaOkno(tmpVektorKlasa[1].moda);
+						RysujPunkt(kontekst, pt1, kolor);
+					}
+
+					if (licz2 > 0) {
+						tmpVektorKlasa[2].moda = WyszukajSrodek(klasa2, licz2);
+						POINT pt2 = UkladNaOkno(tmpVektorKlasa[2].moda);
+						RysujPunkt(kontekst, pt2, kolor);
+					}
+
+					if (licz3 > 0) {
+						tmpVektorKlasa[3].moda = WyszukajSrodek(klasa3, licz3);
+						POINT pt3 = UkladNaOkno(tmpVektorKlasa[3].moda);
+						RysujPunkt(kontekst, pt3, kolor);
+					}
+
+					// krok 005
+					// Funkcje OknoNaUklad oraz UkladNaOkno przeliczaj¹ wspó³rzêdne ekranowe na wspó³rzêdne uk³adu i odwrotnie.
+					// W uk³adzie wspó³rzêdnych, w którym dzia³a klasyfikator, wartoœci x zmieniaj¹ siê w zakresie(-4; 4), a y(-3; 3).
+
+					for (double x = -4; x <= 4; x += 0.05) {
+						for (double y = -3; y <= 3; y += 0.05) {
+							vector<double> dystans = { LDBL_MAX, LDBL_MAX, LDBL_MAX, LDBL_MAX };
+							tmpMidPoint.x = x;
+							tmpMidPoint.y = y;
+							int tmpdystansmin = 99999;
+							int tmpMinDystansKlasa = 99999;
+
+							for (int klasa = 0; klasa < 4; klasa++)
+							{
+
+								if (tmpVektorKlasa[klasa].licz != 0)
+								{
+									dystans[klasa] = fabs(x - tmpVektorKlasa[klasa].moda.x) + fabs(y - tmpVektorKlasa[klasa].moda.y);
+									if (tmpdystansmin > dystans[klasa]) {
+										tmpdystansmin = dystans[klasa];
+										tmpMinDystansKlasa = klasa;
+									}
+								}
+							}
+
+							tmpPt = UkladNaOkno(tmpMidPoint);
+
+							RysujPixel(kontekst, tmpPt, tmpVektorKlasa[tmpMinDystansKlasa].kolor);
+						}
+					}
+					break;
+				}
+		case 302:						//Klasyfikator -> Czyœæ
+
+				break;
+
+		case 400: MessageBox(okno, "Imiê i nazwisko: Artur Tryc\nNumer indeksu: 142248", "Autor", MB_OK);
 		}
 		return 0;
 	
@@ -382,6 +543,37 @@ BOOL RysujPunkty(HDC kontekst)
 	
 	return bWyn;
 }
+
+DPOINT WyszukajSrodek(DPOINT __klasa[], int __licz) {
+	DPOINT midPoint;
+	midPoint.x = 0;
+	midPoint.y = 0;
+
+	for (int i = 0; i < __licz; i++)
+	{
+		midPoint.x += __klasa[i].x;
+		midPoint.y += __klasa[i].y;
+	}
+	midPoint.x /= __licz;
+	midPoint.y /= __licz;
+
+	return midPoint;
+}
+
+BOOL RysujPixel(HDC kontekst, POINT pt, COLORREF kolor)
+{
+	BOOL bWyn = TRUE;
+
+	HPEN pioro = CreatePen(PS_SOLID, 1, kolor);
+	SelectObject(kontekst, pioro);
+
+	Ellipse(kontekst, pt.x - 1, pt.y - 1, pt.x + 1, pt.y + 1);
+
+	DeleteObject(pioro);
+
+	return bWyn;
+}
+
 
 /*	ZADANIA
 Program nale¿y uzupe³niæ o implementacjê klasyfikatora minimalnoodleg³oœciowego z zadanymi metrykami.
