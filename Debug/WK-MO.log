@@ -1,4 +1,0 @@
-﻿cl : wiersz polecenia warning D9035: Opcja "Gm" jest przestarzała i będzie usunięta w przyszłych wydaniach
-  WK-MO.cpp
-F:\03 Studia\03_04_Widzenie Komputerowe\Laboratorium 04\SimpleMinDistanceClassifier\WK-MO.cpp(560,35): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
-  WK-MO.vcxproj -> F:\03 Studia\03_04_Widzenie Komputerowe\Laboratorium 04\SimpleMinDistanceClassifier\Debug\WK-MO.exe
