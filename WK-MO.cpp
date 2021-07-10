@@ -4,6 +4,7 @@
 
 #include <windows.h>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -203,7 +204,7 @@ LRESULT CALLBACK WndProc (HWND okno, UINT kod_meldunku, WPARAM wParam, LPARAM lP
 						POINT pt1 = UkladNaOkno(tmpVektorKlasa[1].moda);
 						RysujPunkt(kontekst, pt1, kolor);
 					}
-					
+
 					if (licz2 > 0) {
 						tmpVektorKlasa[2].moda = WyszukajSrodek(klasa2, licz2);
 						POINT pt2 = UkladNaOkno(tmpVektorKlasa[2].moda);
@@ -225,27 +226,22 @@ LRESULT CALLBACK WndProc (HWND okno, UINT kod_meldunku, WPARAM wParam, LPARAM lP
 							vector<double> dystans = { LDBL_MAX, LDBL_MAX, LDBL_MAX, LDBL_MAX };
 							tmpMidPoint.x = x;
 							tmpMidPoint.y = y;
-							int tmpdystansmin = 99999;
-							int tmpMinDystansKlasa = 99999;
 
 							for (int klasa = 0; klasa < 4; klasa++)
 							{
-								
+
 								if (tmpVektorKlasa[klasa].licz != 0)
 								{
-									dystans[klasa] = pow(x - tmpVektorKlasa[klasa].moda.x, 2) + pow(y - tmpVektorKlasa[klasa].moda.y, 2);
-									if (tmpdystansmin > dystans[klasa]) {
-										tmpdystansmin = dystans[klasa];
-										tmpMinDystansKlasa = klasa;
-									}
-								
+									dystans[klasa] = sqrt(pow(x - tmpVektorKlasa[klasa].moda.x, 2) + pow(y - tmpVektorKlasa[klasa].moda.y, 2));
 								}
-							}	
-							
+								else continue;
+							}
+							auto tmpMinimum = std::min_element(dystans.begin(), dystans.end());
+							int tmpMinimumKlasa = std::distance(dystans.begin(), tmpMinimum);
+
 							tmpPt = UkladNaOkno(tmpMidPoint);
 
-							RysujPixel(kontekst, tmpPt, tmpVektorKlasa[tmpMinDystansKlasa].kolor);
-
+							RysujPixel(kontekst, tmpPt, tmpVektorKlasa[tmpMinimumKlasa].kolor);
 						}
 					}
 					break;
@@ -305,8 +301,6 @@ LRESULT CALLBACK WndProc (HWND okno, UINT kod_meldunku, WPARAM wParam, LPARAM lP
 							vector<double> dystans = { LDBL_MAX, LDBL_MAX, LDBL_MAX, LDBL_MAX };
 							tmpMidPoint.x = x;
 							tmpMidPoint.y = y;
-							int tmpdystansmin = 99999;
-							int tmpMinDystansKlasa = 99999;
 
 							for (int klasa = 0; klasa < 4; klasa++)
 							{
@@ -314,16 +308,15 @@ LRESULT CALLBACK WndProc (HWND okno, UINT kod_meldunku, WPARAM wParam, LPARAM lP
 								if (tmpVektorKlasa[klasa].licz != 0)
 								{
 									dystans[klasa] = fabs(x - tmpVektorKlasa[klasa].moda.x) + fabs(y - tmpVektorKlasa[klasa].moda.y);
-									if (tmpdystansmin > dystans[klasa]) {
-										tmpdystansmin = dystans[klasa];
-										tmpMinDystansKlasa = klasa;
-									}
 								}
+								else continue;
 							}
+							auto tmpMinimum = std::min_element(dystans.begin(), dystans.end());
+							int tmpMinimumKlasa = std::distance(dystans.begin(), tmpMinimum);
 
 							tmpPt = UkladNaOkno(tmpMidPoint);
 
-							RysujPixel(kontekst, tmpPt, tmpVektorKlasa[tmpMinDystansKlasa].kolor);
+							RysujPixel(kontekst, tmpPt, tmpVektorKlasa[tmpMinimumKlasa].kolor);
 						}
 					}
 					break;
@@ -564,7 +557,7 @@ BOOL RysujPixel(HDC kontekst, POINT pt, COLORREF kolor)
 {
 	BOOL bWyn = TRUE;
 
-	HPEN pioro = CreatePen(PS_SOLID, 1, kolor);
+	HPEN pioro = CreatePen(PS_SOLID, 0.5, kolor);
 	SelectObject(kontekst, pioro);
 
 	Ellipse(kontekst, pt.x - 1, pt.y - 1, pt.x + 1, pt.y + 1);
